@@ -7,7 +7,7 @@ declare_id!("4VPiS6RyDfAooQyxfW2sbjaEFENCKLTSsVwoiEz8tEZm");
 pub mod anchor_exchange_hub {
     use super::*;
 
-    pub fn send_post(ctx: Context<SendPost>, topic: String, content: String) -> Result<()> {
+    pub fn create_post(ctx: Context<CreatePost>, topic: String, content: String) -> Result<()> {
         let post: &mut Account<Post> = &mut ctx.accounts.post;
         let author: &Signer = &ctx.accounts.author;
         let clock: Clock = Clock::get()?;
@@ -21,10 +21,33 @@ pub mod anchor_exchange_hub {
 
         Ok(())
     }
+
+    // pub fn upvote_post(ctx: Context<UpvotePost>) -> Result<()> {
+    //     let post: &mut Account<Post> = &mut ctx.accounts.post;
+    //     let user: &Signer = &ctx.accounts.user;
+
+    //     if post.author == *user.key {
+    //         return Err(ErrorCode::CannotUpvoteOwnPost.into());
+    //     }
+
+    //     if
+    //         ctx.accounts.user_account.upvoted_posts
+    //             .iter()
+    //             .any(|&post_key| post_key == *post.to_account_info().key)
+    //     {
+    //         return Err(ErrorCode::AlreadyUpvoted.into());
+    //     }
+
+    //     post.upvotes += 1;
+
+    //     ctx.accounts.user_account.upvoted_posts.push(*post.to_account_info().key);
+
+    //     Ok(())
+    // }
 }
 
 #[derive(Accounts)]
-pub struct SendPost<'info> {
+pub struct CreatePost<'info> {
     #[account(init, payer = author, space = 264)]
     pub post: Account<'info, Post>,
     #[account(mut)]
@@ -40,5 +63,27 @@ pub struct Post {
     pub content: String,
     pub likes: u64,
     pub timestamp: i64,
-    pub upvotes: u64,
+    pub upvotes: i64,
 }
+// #[derive(Accounts)]
+// pub struct UpvotePost<'info> {
+//     #[account(mut)]
+//     pub post: Account<'info, Post>,
+//     #[account(mut)]
+//     pub user_account: Account<'info, UserAccount>,
+//     #[account(signer)]
+//     pub user: Signer<'info>,
+// }
+
+// #[account]
+// pub struct UserAccount {
+//     pub upvoted_posts: Vec<Pubkey>,
+// }
+
+// #[error_code]
+// pub enum ErrorCode {
+//     #[msg("Cannot upvote your own post")]
+//     CannotUpvoteOwnPost,
+//     #[msg("Already upvoted this post")]
+//     AlreadyUpvoted,
+// }
