@@ -18,7 +18,7 @@ describe("anchor-exchange-hub", () => {
     await program.methods
       .createPost(topic, content)
       .accounts({
-        author: provider.publicKey,
+        author: program.provider.publicKey,
         post: keyPair.publicKey,
         systemProgram: anchor.web3.SystemProgram.programId,
       })
@@ -26,6 +26,7 @@ describe("anchor-exchange-hub", () => {
       .rpc();
 
     const posted = await program.account.post.fetch(keyPair.publicKey);
+    console.log(posted);
 
     assert.equal(
       posted.author.toBase58(),
@@ -36,38 +37,8 @@ describe("anchor-exchange-hub", () => {
     assert.ok(posted.timestamp);
   });
 
-  // it("Upvote a post", async () => {
-  //   const topic = "Solana Topic";
-  //   const content = "Solana Post";
-
-  //   await program.methods
-  //     .createPost(topic, content)
-  //     .accounts({
-  //       author: provider.publicKey,
-  //       post: keyPair.publicKey,
-  //       systemProgram: anchor.web3.SystemProgram.programId,
-  //     })
-  //     .signers([keyPair])
-  //     .rpc();
-
-  //   const posted = await program.account.post.fetch(keyPair.publicKey);
-  //   console.log("Posted:", posted);
-
-  //   await program.methods
-  //     .upvotePost()
-  //     .accounts({
-  //       post: provider.publicKey,
-  //       user: keyPair.publicKey,
-  //     })
-  //     .signers([keyPair])
-  //     .rpc();
-
-  //   const updatedPost = await program.account.post.fetch(provider.publicKey);
-  //   console.log("Updated Post:", updatedPost);
-
-  //   console.log("Expected Upvotes:", posted.upvotes.toNumber() + 1);
-  //   console.log("Actual Upvotes:", updatedPost.upvotes.toNumber());
-
-  //   assert.equal(updatedPost.upvotes.toNumber(), posted.upvotes.toNumber() + 1);
-  // });
+  it("can fetch all posts", async () => {
+    const tweetAccounts = await program.account.post.all();
+    console.log(tweetAccounts);
+  });
 });
